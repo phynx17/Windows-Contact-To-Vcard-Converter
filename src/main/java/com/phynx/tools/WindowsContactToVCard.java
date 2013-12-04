@@ -52,7 +52,7 @@ public class WindowsContactToVCard {
         }
 
         boolean oneFileOnly = false;
-        String path = null;
+        String path;
         String targetDirectory = null;
 
         int idx = 0;
@@ -99,8 +99,7 @@ public class WindowsContactToVCard {
 
         } else {
             out("Please check your path again. Not a valid argument supplied");
-            return;
-        };
+        }
 
     }
 
@@ -125,8 +124,11 @@ public class WindowsContactToVCard {
     /**
      * As it name implies, convert the Windows Contact
      *
+     * @param file file instance. Cannot be null
+     * @return the converted VCard content
+     *
      */
-    public String convert(String file) {
+    public String convert(final String file) {
         return convert(new File(file));
     }
 
@@ -134,10 +136,10 @@ public class WindowsContactToVCard {
     /**
      * As it name implies, convert the Windows Contact
      *
-     * @param file
-     * @return
+     * @param file file instance. Cannot be null
+     * @return the converted VCard content
      */
-    public String convert(File file) {
+    public String convert(final File file) {
         isFileOK(file);
         VCard vcard = new VCard();
         try {
@@ -262,7 +264,6 @@ public class WindowsContactToVCard {
             throw new RuntimeException("I/O Error while converting: " + e.getMessage(), e);
         }
 
-
     }
 
 
@@ -305,9 +306,9 @@ public class WindowsContactToVCard {
 
     /**
      * Write to VCard for found element
-     * @param node
-     * @param vCard
-     * @param properties
+     * @param node the element
+     * @param vCard vcard
+     * @param properties properties
      */
     protected void writeFoundElement(Node node, VCard vCard, VCardProperties properties) {
         if (node != null) {
@@ -317,10 +318,10 @@ public class WindowsContactToVCard {
 
     /**
      * Write to VCard for found element
-     * @param node
-     * @param vCard
-     * @param properties
-     * @param types
+     * @param node the element
+     * @param vCard vcard
+     * @param properties vcard property
+     * @param types  types (if any)
      */
     protected void writeFoundElement(Node node, VCard vCard, VCardProperties properties, List<VCardType> types) {
         if (node != null) {
@@ -358,8 +359,8 @@ public class WindowsContactToVCard {
 
     /**
      * Check whether a File is OK. Breaks prematurely if NOT OK
-     * @param file
-     * @return
+     * @param file the file
+     * @return if file Ok
      */
     static boolean isFileOK (String file) {
         return isFileOK(new File(file));
@@ -367,8 +368,8 @@ public class WindowsContactToVCard {
 
     /**
      * Check whether a File is OK. Breaks prematurely if NOT OK
-     * @param file
-     * @return
+     * @param file the file
+     * @return if file OK
      */
     static boolean isFileOK (File file) {
         if (file == null) {
@@ -384,20 +385,19 @@ public class WindowsContactToVCard {
 
     /**
      * Check if argument is windows contact
-     * @param file
-     * @return
+     * @param file file
+     * @return if windows contact
      */
     static boolean isWindowsContact(File file) {
-        if (file != null && file.getName().endsWith(".contact")) return true;
-        return false;
+        return file != null && file.getName().endsWith(".contact");
     }
 
 
     /**
      * Write VCard content to a file
      *
-     * @param targetFile
-     * @param vcardBuffer
+     * @param targetFile target file
+     * @param vcardBuffer Vcard instance
      */
     static void writeContentToVCardFile(File targetFile, VCard vcardBuffer) {
         writeContentToVCardFile(targetFile, vcardBuffer.wrapCard());
@@ -405,8 +405,8 @@ public class WindowsContactToVCard {
 
     /**
      * Write content to file
-     * @param targetFile
-     * @param content
+     * @param targetFile target file
+     * @param content the VCard content
      */
     static void writeContentToVCardFile(File targetFile, String content) {
         FileWriter writer = null;
@@ -445,11 +445,15 @@ public class WindowsContactToVCard {
         }
 
         String newName = fileName.replace("contact", "") + "vcf";
-        File targetFile = null;
+        File targetFile;
         if (targetDirectory != null) {
             //Make sure exists
             File ___d = new File(targetDirectory);
-            if (!___d.exists()) ___d.mkdir();
+            if (!___d.exists()) {
+                if (!___d.mkdir()) {
+                    throw new RuntimeException("Failed to create target directory");
+                }
+            }
             else {
                 if (!___d.isDirectory()) {
                     throw new RuntimeException(___d.getAbsolutePath() + " is not directory");
