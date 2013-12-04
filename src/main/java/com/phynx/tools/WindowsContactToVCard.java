@@ -72,6 +72,7 @@ public class WindowsContactToVCard {
 
 
         WindowsContactToVCard wVcard = new WindowsContactToVCard();
+
         File fi = new File(path);
         if (isFileOK(fi)) {
             //&&(!oneFileOnly || (oneFileOnly && fi.isFile()))
@@ -180,10 +181,11 @@ public class WindowsContactToVCard {
 
                     } else if (el.getTagName().equals("c:PhoneNumberCollection")) {
                         NodeList _phoneNumbers = el.getElementsByTagName("c:PhoneNumber");
+
                         int offset = -1;
                         for (int _ip = (offset+1); _ip < _phoneNumbers.getLength(); _ip++) {
                             offset++;
-                            Node nodePhoneName = getChildElement(el, "c:PhoneNumber",offset);
+                            Node nodePhoneName = _phoneNumbers.item(_ip);
                             if (nodePhoneName == null) continue;
 
                             List<VCardType> types = new ArrayList<VCardType>();
